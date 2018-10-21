@@ -58,7 +58,7 @@ Task("Clean")
 });
 
 Task("Download")
-    //.IsDependentOn("Clean")
+    .IsDependentOn("Clean")
     .Does(() =>
 {
     CurlDownloadFiles(
