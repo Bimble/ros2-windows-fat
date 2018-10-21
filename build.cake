@@ -114,9 +114,14 @@ Task("Setup ROS")
     .Does(() =>
 {
     Unzip(ros, buildDir);
+    StringBuilder builder = new StringBuilder();
+    builder.AppendLine("@echo off");
+    builder.AppendLine("call:_colcon_prefix_bat_prepend_unique_value PATH \"%~dp0Dependencies\\tinyxml2.6.0.0\\lib;%~dp0Dependencies\\ssl\\bin;%~dp0Dependencies\\WinPython\\python-3.7.0.amd64;%~dp0Dependencies\\WinPython\\python-3.7.0.amd64\\Scripts\\\"");
+    builder.AppendLine("call:_colcon_prefix_bat_prepend_unique_value PATH \"%~dp0Dependencies\\tinyxml-usestl.2.6.2\\lib;%~dp0Dependencies\\eigen.3.3.4\\lib\"");
 
     //Patch
     ReplaceTextInFiles(buildDir + new FilePath("ros2-windows/local_setup.bat"), "c:\\python37\\python.exe", "%~dp0Dependencies\\WinPython\\"+ unpackedPythonDirectory +"\\python.exe");
+    ReplaceTextInFiles(buildDir + new FilePath("ros2-windows/local_setup.bat"), "@echo off", builder.ToString());
 });
 
 Task("Pack")
