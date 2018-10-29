@@ -120,11 +120,11 @@ Task("Setup ROS")
     builder.AppendLine("call:_colcon_prefix_bat_prepend_unique_value PATH \"%~dp0Dependencies\\tinyxml-usestl.2.6.2\\lib;%~dp0Dependencies\\eigen.3.3.4\\lib\"");
 
     //Patch
-    ReplaceTextInFiles(buildDir + new FilePath("ros2-windows/local_setup.bat"), "c:\\python37\\python.exe", "%~dp0Dependencies\\WinPython\\"+ unpackedPythonDirectory +"\\python.exe");
-    ReplaceTextInFiles(buildDir + new FilePath("ros2-windows/local_setup.bat"), "@echo off", builder.ToString());
+    ReplaceTextInFiles(ros2Dir + new FilePath("local_setup.bat"), "c:\\python37\\python.exe", "%~dp0Dependencies\\WinPython\\"+ unpackedPythonDirectory +"\\python.exe");
+    ReplaceTextInFiles(ros2Dir + new FilePath("local_setup.bat"), "@echo off", builder.ToString());
 
     //Temp fix as there is an error, reported at colcon repo.
-    ReplaceTextInFiles(buildDir + new FilePath("ros2-windows/local_setup.bat"), "if not exist \"%_colcon_python_executable%\" (", "if not exist \"!_colcon_python_executable!\" (");
+    ReplaceTextInFiles(ros2Dir + new FilePath("local_setup.bat"), "if not exist \"%_colcon_python_executable%\" (", "if not exist \"!_colcon_python_executable!\" (");
 });
 
 Task("Pack")
@@ -136,6 +136,21 @@ Task("Pack")
     .Does(() =>
 {
     Zip(buildDir, buildDir + new FilePath("ros.zip"));
+});
+
+Task("Create patch file")
+    .Does(() =>
+{
+    StringBuilder builder = new StringBuilder();
+    builder.AppendLine("$path = [IO.Path]::GetFullPath(\"Dependencies\\WinPython\\" + unpackedPythonDirectory +"\\python.exe\");");
+    builder.AppendLine("$configFiles = Get-ChildItem Scripts *.py -rec");
+    builder.AppendLine("foreach ($file in $configFiles)");
+    builder.AppendLine("{");
+    builder.AppendLine("	$content = Get-Content $file.PSPath");
+    builder.AppendLine("	$content[0] = \"#!\" + $path");
+    builder.AppendLine("	$content | Set-Content $file.PSPath");
+    builder.AppendLine("}");
+    FileWriteText(ros2Dir + new FilePath("Patch.ps1"), builder.ToString());
 });
 
 //////////////////////////////////////////////////////////////////////
