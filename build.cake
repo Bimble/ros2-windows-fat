@@ -40,7 +40,7 @@ var files = new List<(FilePath FilePath, Uri Uri)>()
     (tinyxml_usestlFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2018-06-12-1/tinyxml-usestl.2.6.2.nupkg")),
     (tinyxml2File, new Uri("https://github.com/ros2/choco-packages/releases/download/2018-06-12-1/tinyxml2.6.0.0.nupkg")),
     (ssl, new Uri("https://slproweb.com/download/Win64OpenSSL-1_0_2p.exe")),
-    (ros, new Uri("https://github.com/ros2/ros2/releases/download/release-bouncy-20180824/ros2-bouncy-windows-AMD64.zip"))
+    (ros, new Uri("https://github.com/ros2/ros2/releases/download/release-crystal-20190117/ros2-crystal-20190117-windows-release-amd64.tar.bz2"))
 };
 
 
