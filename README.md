@@ -9,5 +9,5 @@ Build script to generate a ROS2 Crystal Clemmys windows zip containing all depen
 
 - Unpack
 - Run Patch.ps1 to update the python scripts for usage with the extracted WinPython.
-- Setup your environment u sing local_setup.bat (local_setup.ps1 not yet supported).
+- Setup your environment using local_setup.bat (local_setup.ps1 not yet supported).
 
