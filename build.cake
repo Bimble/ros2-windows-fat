@@ -122,9 +122,6 @@ Task("Setup ROS")
     //Patch
     ReplaceTextInFiles(ros2Dir + new FilePath("local_setup.bat"), "c:\\python37\\python.exe", "%~dp0Dependencies\\WinPython\\"+ unpackedPythonDirectory +"\\python.exe");
     ReplaceTextInFiles(ros2Dir + new FilePath("local_setup.bat"), "@echo off", builder.ToString());
-
-    //Temp fix as there is an error, reported at colcon repo.
-    ReplaceTextInFiles(ros2Dir + new FilePath("local_setup.bat"), "if not exist \"%_colcon_python_executable%\" (", "if not exist \"!_colcon_python_executable!\" (");
 });
 
 Task("Create patch file")
