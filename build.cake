@@ -127,17 +127,6 @@ Task("Setup ROS")
     ReplaceTextInFiles(ros2Dir + new FilePath("local_setup.bat"), "if not exist \"%_colcon_python_executable%\" (", "if not exist \"!_colcon_python_executable!\" (");
 });
 
-Task("Pack")
-    .IsDependentOn("Setup Python")
-    .IsDependentOn("Setup CMake")
-    .IsDependentOn("Setup Nuget Libaries")
-    .IsDependentOn("Setup SSL")
-    .IsDependentOn("Setup ROS")
-    .Does(() =>
-{
-    Zip(buildDir, buildDir + new FilePath("ros.zip"));
-});
-
 Task("Create patch file")
     .Does(() =>
 {
@@ -151,6 +140,18 @@ Task("Create patch file")
     builder.AppendLine("	$content | Set-Content $file.PSPath");
     builder.AppendLine("}");
     FileWriteText(ros2Dir + new FilePath("Patch.ps1"), builder.ToString());
+});
+
+Task("Pack")
+    .IsDependentOn("Setup Python")
+    .IsDependentOn("Setup CMake")
+    .IsDependentOn("Setup Nuget Libaries")
+    .IsDependentOn("Setup SSL")
+    .IsDependentOn("Setup ROS")
+    .IsDependentOn("Create patch file")
+    .Does(() =>
+{
+    Zip(buildDir, buildDir + new FilePath("ros.zip"));
 });
 
 //////////////////////////////////////////////////////////////////////
