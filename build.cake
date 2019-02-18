@@ -33,7 +33,7 @@ var ssl = new FilePath(downloadDir + new FilePath("ssl.exe"));
 var ros = new FilePath(downloadDir + new FilePath("ros.zip"));
 var files = new List<(FilePath FilePath, Uri Uri)>()
 {
-    (pythonFile, new Uri("https://github.com/winpython/winpython/releases/download/1.10.20180827/WinPython64-3.7.0.2Zero.exe")),
+    (pythonFile, new Uri("https://datapacket.dl.sourceforge.net/project/winpython/WinPython_3.7/3.7.2.0/betas/WinPython64-3.7.2.0zerob5.exe")),
     (cmakeFile, new Uri("https://cmake.org/files/v3.13/cmake-3.13.0-rc1-win64-x64.zip")),
     (asioFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2018-06-12-1/asio.1.12.1.nupkg")),
     (eigenFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2018-06-12-1/eigen.3.3.4.nupkg")),
