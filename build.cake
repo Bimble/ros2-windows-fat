@@ -1,6 +1,6 @@
-#addin Cake.Curl
-#addin "Cake.Powershell"
-#addin "Cake.FileHelpers"
+#addin Cake.Curl&version=4.0.0
+#addin "Cake.Powershell"&version=3.1.0
+#addin "Cake.FileHelpers"&version=0.4.7
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -12,7 +12,7 @@ var target = Argument("target", "Default");
 // PREPARATION
 //////////////////////////////////////////////////////////////////////
 
-var unpackedPythonDirectory = "python-3.7.0.amd64";
+var unpackedPythonDirectory = "python-3.7.2.amd64";
 
 // Define directories.
 var buildDir = Directory("./output");
@@ -76,7 +76,7 @@ Task("Setup Python")
 {
     //NSIS installer, only works with backslash...
     var absFolder = MakeAbsolute(winPythonDir).FullPath.Replace('/', '\\');
-    StartProcess(MakeAbsolute(pythonFile) , new ProcessSettings{Arguments = "/SILENT /D=" + absFolder});
+    StartProcess(MakeAbsolute(pythonFile) , new ProcessSettings{Arguments = "/SILENT /DIR=" + absFolder});
 
     //Make winpython movable
     StartProcess(MakeAbsolute(new FilePath(winPythonDir + new FilePath("scripts/make_winpython_movable.bat"))), new ProcessSettings{Arguments = "<nul"});
