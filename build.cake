@@ -76,7 +76,7 @@ Task("Setup Python")
 {
     //NSIS installer, only works with backslash...
     var absFolder = MakeAbsolute(winPythonDir).FullPath.Replace('/', '\\');
-    StartProcess(MakeAbsolute(pythonFile) , new ProcessSettings{Arguments = "/S /D=" + absFolder});
+    StartProcess(MakeAbsolute(pythonFile) , new ProcessSettings{Arguments = "/SILENT /D=" + absFolder});
 
     //Make winpython movable
     StartProcess(MakeAbsolute(new FilePath(winPythonDir + new FilePath("scripts/make_winpython_movable.bat"))), new ProcessSettings{Arguments = "<nul"});
