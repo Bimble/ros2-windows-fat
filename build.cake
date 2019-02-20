@@ -35,10 +35,10 @@ var files = new List<(FilePath FilePath, Uri Uri)>()
 {
     (pythonFile, new Uri("https://datapacket.dl.sourceforge.net/project/winpython/WinPython_3.7/3.7.2.0/betas/WinPython64-3.7.2.0zerob5.exe")),
     (cmakeFile, new Uri("https://cmake.org/files/v3.13/cmake-3.13.0-rc1-win64-x64.zip")),
-    (asioFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2018-06-12-1/asio.1.12.1.nupkg")),
-    (eigenFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2018-06-12-1/eigen.3.3.4.nupkg")),
-    (tinyxml_usestlFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2018-06-12-1/tinyxml-usestl.2.6.2.nupkg")),
-    (tinyxml2File, new Uri("https://github.com/ros2/choco-packages/releases/download/2018-06-12-1/tinyxml2.6.0.0.nupkg")),
+    (asioFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2019-02-15-1/asio.1.12.1.nupkg")),
+    (eigenFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2019-02-15-1/eigen.3.3.4.nupkg")),
+    (tinyxml_usestlFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2019-02-15-1/tinyxml-usestl.2.6.2.nupkg")),
+    (tinyxml2File, new Uri("https://github.com/ros2/choco-packages/releases/download/2019-02-15-1/tinyxml2.6.0.0.nupkg")),
     (ssl, new Uri("https://slproweb.com/download/Win64OpenSSL-1_0_2q.exe")),
     (ros, new Uri("https://github.com/ros2/ros2/releases/download/release-crystal-20190214/ros2-crystal-20190214-windows-release-amd64.zip"))
 };
