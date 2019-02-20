@@ -130,12 +130,15 @@ Task("Create patch file")
     StringBuilder builder = new StringBuilder();
     builder.AppendLine("[Environment]::CurrentDirectory = $ExecutionContext.SessionState.Path.CurrentFileSystemLocation");
     builder.AppendLine("$path = [IO.Path]::GetFullPath(\"Dependencies\\WinPython\\" + unpackedPythonDirectory +"\\python.exe\");");
-    builder.AppendLine("$configFiles = Get-ChildItem Scripts *.py -rec");
+    builder.AppendLine("$configFiles = Get-ChildItem *.py -rec");
     builder.AppendLine("foreach ($file in $configFiles)");
     builder.AppendLine("{");
     builder.AppendLine("	$content = Get-Content $file.PSPath");
-    builder.AppendLine("	$content[0] = \"#!\" + $path");
-    builder.AppendLine("	$content | Set-Content $file.PSPath");
+    builder.AppendLine("	if($content.Length -gt 0 -and $content[0] -eq \"#!c:\\python37\\python.exe\")");
+    builder.AppendLine("	{");
+    builder.AppendLine("	    $content[0] = \"#!\" + $path");
+    builder.AppendLine("	    $content | Set-Content $file.PSPath");
+    builder.AppendLine("	}");
     builder.AppendLine("}");
     FileWriteText(ros2Dir + new FilePath("Patch.ps1"), builder.ToString());
 });
