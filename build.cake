@@ -1,6 +1,6 @@
-#addin Cake.Curl
-#addin "Cake.Powershell"
-#addin "Cake.FileHelpers"
+#addin Cake.Curl&version=4.0.0
+#addin "Cake.Powershell"&version=3.1.0
+#addin "Cake.FileHelpers"&version=0.4.7
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -12,7 +12,7 @@ var target = Argument("target", "Default");
 // PREPARATION
 //////////////////////////////////////////////////////////////////////
 
-var unpackedPythonDirectory = "python-3.7.0.amd64";
+var unpackedPythonDirectory = "python-3.7.2.amd64";
 
 // Define directories.
 var buildDir = Directory("./output");
@@ -33,14 +33,14 @@ var ssl = new FilePath(downloadDir + new FilePath("ssl.exe"));
 var ros = new FilePath(downloadDir + new FilePath("ros.zip"));
 var files = new List<(FilePath FilePath, Uri Uri)>()
 {
-    (pythonFile, new Uri("https://github.com/winpython/winpython/releases/download/1.10.20180827/WinPython64-3.7.0.2Zero.exe")),
+    (pythonFile, new Uri("https://datapacket.dl.sourceforge.net/project/winpython/WinPython_3.7/3.7.2.0/betas/WinPython64-3.7.2.0zerob5.exe")),
     (cmakeFile, new Uri("https://cmake.org/files/v3.13/cmake-3.13.0-rc1-win64-x64.zip")),
-    (asioFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2018-06-12-1/asio.1.12.1.nupkg")),
-    (eigenFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2018-06-12-1/eigen.3.3.4.nupkg")),
-    (tinyxml_usestlFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2018-06-12-1/tinyxml-usestl.2.6.2.nupkg")),
-    (tinyxml2File, new Uri("https://github.com/ros2/choco-packages/releases/download/2018-06-12-1/tinyxml2.6.0.0.nupkg")),
+    (asioFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2019-02-15-1/asio.1.12.1.nupkg")),
+    (eigenFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2019-02-15-1/eigen.3.3.4.nupkg")),
+    (tinyxml_usestlFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2019-02-15-1/tinyxml-usestl.2.6.2.nupkg")),
+    (tinyxml2File, new Uri("https://github.com/ros2/choco-packages/releases/download/2019-02-15-1/tinyxml2.6.0.0.nupkg")),
     (ssl, new Uri("https://slproweb.com/download/Win64OpenSSL-1_0_2q.exe")),
-    (ros, new Uri("https://github.com/ros2/ros2/releases/download/release-crystal-20190117/ros2-crystal-20190117-windows-release-amd64.tar.bz2"))
+    (ros, new Uri("https://github.com/ros2/ros2/releases/download/release-crystal-20190214/ros2-crystal-20190214-windows-release-amd64.zip"))
 };
 
 
@@ -76,7 +76,7 @@ Task("Setup Python")
 {
     //NSIS installer, only works with backslash...
     var absFolder = MakeAbsolute(winPythonDir).FullPath.Replace('/', '\\');
-    StartProcess(MakeAbsolute(pythonFile) , new ProcessSettings{Arguments = "/S /D=" + absFolder});
+    StartProcess(MakeAbsolute(pythonFile) , new ProcessSettings{Arguments = "/SILENT /DIR=" + absFolder});
 
     //Make winpython movable
     StartProcess(MakeAbsolute(new FilePath(winPythonDir + new FilePath("scripts/make_winpython_movable.bat"))), new ProcessSettings{Arguments = "<nul"});
@@ -116,28 +116,29 @@ Task("Setup ROS")
     Unzip(ros, buildDir);
     StringBuilder builder = new StringBuilder();
     builder.AppendLine("@echo off");
-    builder.AppendLine("call:_colcon_prefix_bat_prepend_unique_value PATH \"%~dp0Dependencies\\tinyxml2.6.0.0\\lib;%~dp0Dependencies\\ssl\\bin;%~dp0Dependencies\\WinPython\\python-3.7.0.amd64;%~dp0Dependencies\\WinPython\\python-3.7.0.amd64\\Scripts\\\"");
+    builder.AppendLine("call:_colcon_prefix_bat_prepend_unique_value PATH \"%~dp0Dependencies\\tinyxml2.6.0.0\\lib;%~dp0Dependencies\\ssl\\bin;%~dp0Dependencies\\WinPython\\"+unpackedPythonDirectory+";%~dp0Dependencies\\WinPython\\"+unpackedPythonDirectory+"\\Scripts\\\"");
     builder.AppendLine("call:_colcon_prefix_bat_prepend_unique_value PATH \"%~dp0Dependencies\\tinyxml-usestl.2.6.2\\lib;%~dp0Dependencies\\eigen.3.3.4\\lib\"");
 
     //Patch
     ReplaceTextInFiles(ros2Dir + new FilePath("local_setup.bat"), "c:\\python37\\python.exe", "%~dp0Dependencies\\WinPython\\"+ unpackedPythonDirectory +"\\python.exe");
     ReplaceTextInFiles(ros2Dir + new FilePath("local_setup.bat"), "@echo off", builder.ToString());
-
-    //Temp fix as there is an error, reported at colcon repo.
-    ReplaceTextInFiles(ros2Dir + new FilePath("local_setup.bat"), "if not exist \"%_colcon_python_executable%\" (", "if not exist \"!_colcon_python_executable!\" (");
 });
 
 Task("Create patch file")
     .Does(() =>
 {
     StringBuilder builder = new StringBuilder();
+    builder.AppendLine("[Environment]::CurrentDirectory = $ExecutionContext.SessionState.Path.CurrentFileSystemLocation");
     builder.AppendLine("$path = [IO.Path]::GetFullPath(\"Dependencies\\WinPython\\" + unpackedPythonDirectory +"\\python.exe\");");
-    builder.AppendLine("$configFiles = Get-ChildItem Scripts *.py -rec");
+    builder.AppendLine("$configFiles = Get-ChildItem *.py -rec");
     builder.AppendLine("foreach ($file in $configFiles)");
     builder.AppendLine("{");
     builder.AppendLine("	$content = Get-Content $file.PSPath");
-    builder.AppendLine("	$content[0] = \"#!\" + $path");
-    builder.AppendLine("	$content | Set-Content $file.PSPath");
+    builder.AppendLine("	if($content.Length -gt 0 -and $content[0] -eq \"#!c:\\python37\\python.exe\")");
+    builder.AppendLine("	{");
+    builder.AppendLine("	    $content[0] = \"#!\" + $path");
+    builder.AppendLine("	    $content | Set-Content $file.PSPath");
+    builder.AppendLine("	}");
     builder.AppendLine("}");
     FileWriteText(ros2Dir + new FilePath("Patch.ps1"), builder.ToString());
 });
