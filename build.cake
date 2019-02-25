@@ -165,7 +165,7 @@ Task("Test")
              Arguments = @"& start ros2 run demo_nodes_cpp talker & start ros2 run demo_nodes_cpp listener & timeout 2 & ros2 node list & tskill talker /A & tskill listener /A",
              RedirectStandardOutput = true
     };
-    StartProcess(ros2Dir + new FilePath("local_setup.bat"), settings, out redirectedStandardOutput);
+    StartProcess(new FilePath("local_setup.bat"), settings, out redirectedStandardOutput);
 
     var outputList = redirectedStandardOutput.ToList();
     if(!outputList.Any(line => line.Contains("talker")) || !outputList.Any(line => line.Contains("listener")))
