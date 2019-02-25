@@ -155,12 +155,30 @@ Task("Pack")
     Zip(buildDir, buildDir + new FilePath("ros.zip"));
 });
 
+Task("Test")
+    .Does(() =>
+{
+    IEnumerable<string> redirectedStandardOutput;
+    var settings = new ProcessSettings {
+             Arguments = @"& start ros2 run demo_nodes_cpp talker & start ros2 run demo_nodes_cpp listener & timeout 2 & ros2 node list & tskill talker /A & tskill listener /A",
+             RedirectStandardOutput = true
+    };
+    StartProcess(@"output\ros2-windows\local_setup.bat", settings, out redirectedStandardOutput);
+
+    var outputList = redirectedStandardOutput.ToList();
+    if(!outputList.Any(line => line.Contains("talker")) || !outputList.Any(line => line.Contains("listener")))
+    {
+        throw new Exception("Test Failed, expected a talker and listener node.");
+    }
+});
+
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Pack");
+    .IsDependentOn("Pack")
+    .IsDependentOn("Test");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
