@@ -21,6 +21,7 @@ var ros2Dir = buildDir + Directory("ros2-windows");
 var dependenciesDir = ros2Dir + Directory("Dependencies");
 var winPythonDir = dependenciesDir + Directory("WinPython");
 var sslDir = dependenciesDir + Directory("ssl");
+var patchFile = ros2Dir + new FilePath("Patch.ps1");
 
 // Define files to download.
 var pythonFile = new FilePath(downloadDir + new FilePath("WinPython.exe"));
@@ -128,7 +129,7 @@ Task("Create patch file")
     .Does(() =>
 {
     StringBuilder builder = new StringBuilder();
-    builder.AppendLine("[Environment]::CurrentDirectory = $ExecutionContext.SessionState.Path.CurrentFileSystemLocation");
+    builder.AppendLine("[Environment]::CurrentDirectory = $PSScriptRoot");
     builder.AppendLine("$path = [IO.Path]::GetFullPath(\"Dependencies\\WinPython\\" + unpackedPythonDirectory +"\\python.exe\");");
     builder.AppendLine("$configFiles = Get-ChildItem *.py -rec");
     builder.AppendLine("foreach ($file in $configFiles)");
@@ -140,7 +141,7 @@ Task("Create patch file")
     builder.AppendLine("	    $content | Set-Content $file.PSPath");
     builder.AppendLine("	}");
     builder.AppendLine("}");
-    FileWriteText(ros2Dir + new FilePath("Patch.ps1"), builder.ToString());
+    FileWriteText(patchFile, builder.ToString());
 });
 
 Task("Pack")
@@ -155,12 +156,31 @@ Task("Pack")
     Zip(buildDir, buildDir + new FilePath("ros.zip"));
 });
 
+Task("Test")
+    .Does(() =>
+{
+    StartPowershellFile(patchFile);
+    IEnumerable<string> redirectedStandardOutput;
+    var settings = new ProcessSettings {
+             Arguments = @"& start ros2 run demo_nodes_cpp talker & start ros2 run demo_nodes_cpp listener & timeout 2 & ros2 node list & tskill talker /A & tskill listener /A",
+             RedirectStandardOutput = true
+    };
+    StartProcess(new FilePath("local_setup.bat"), settings, out redirectedStandardOutput);
+
+    var outputList = redirectedStandardOutput.ToList();
+    if(!outputList.Any(line => line.Contains("talker")) || !outputList.Any(line => line.Contains("listener")))
+    {
+        throw new Exception("Test Failed, expected a talker and listener node.");
+    }
+});
+
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Pack");
+    .IsDependentOn("Pack")
+    .IsDependentOn("Test");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
