@@ -128,7 +128,7 @@ Task("Create patch file")
     .Does(() =>
 {
     StringBuilder builder = new StringBuilder();
-    builder.AppendLine("[Environment]::CurrentDirectory = $ExecutionContext.SessionState.Path.CurrentFileSystemLocation");
+    builder.AppendLine("[Environment]::CurrentDirectory = $PSScriptRoot");
     builder.AppendLine("$path = [IO.Path]::GetFullPath(\"Dependencies\\WinPython\\" + unpackedPythonDirectory +"\\python.exe\");");
     builder.AppendLine("$configFiles = Get-ChildItem *.py -rec");
     builder.AppendLine("foreach ($file in $configFiles)");
