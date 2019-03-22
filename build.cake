@@ -84,7 +84,7 @@ Task("Setup Python")
     //Make winpython movable
     StartProcess(MakeAbsolute(new FilePath(winPythonDir + new FilePath("scripts/make_winpython_movable.bat"))), new ProcessSettings{Arguments = "<nul"});
     //pip install additional packages
-    StartProcess(new FilePath(winPythonDir + new FilePath(unpackedPythonDirectory +"/python.exe")), new ProcessSettings{Arguments = "-m pip install -U catkin_pkg empy pyparsing pyyaml setuptools"});
+    StartProcess(new FilePath(winPythonDir + new FilePath(unpackedPythonDirectory +"/python.exe")), new ProcessSettings{Arguments = "-m pip install -U catkin_pkg empy pyparsing pyyaml setuptools lxml opencv-python git+https://github.com/lark-parser/lark.git@0.7d pydot PyQt5"});
 });
 
 Task("Setup CMake")
