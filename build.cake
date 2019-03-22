@@ -30,6 +30,7 @@ var asioFile = new FilePath(downloadDir + new FilePath("asio.nupkg"));
 var eigenFile = new FilePath(downloadDir + new FilePath("eigen.nupkg"));
 var tinyxml2File = new FilePath(downloadDir + new FilePath("tinyxml2.nupkg"));
 var tinyxml_usestlFile = new FilePath(downloadDir + new FilePath("tinyxml-usestl.nupkg"));
+var log4cxx = new FilePath(downloadDir + new FilePath("log4cxx.nupkg"));
 var ssl = new FilePath(downloadDir + new FilePath("ssl.exe"));
 var ros = new FilePath(downloadDir + new FilePath("ros.zip"));
 var files = new List<(FilePath FilePath, Uri Uri)>()
@@ -40,8 +41,9 @@ var files = new List<(FilePath FilePath, Uri Uri)>()
     (eigenFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2019-02-15-1/eigen.3.3.4.nupkg")),
     (tinyxml_usestlFile, new Uri("https://github.com/ros2/choco-packages/releases/download/2019-02-15-1/tinyxml-usestl.2.6.2.nupkg")),
     (tinyxml2File, new Uri("https://github.com/ros2/choco-packages/releases/download/2019-02-15-1/tinyxml2.6.0.0.nupkg")),
-    (ssl, new Uri("https://slproweb.com/download/Win64OpenSSL-1_0_2q.exe")),
-    (ros, new Uri("https://github.com/ros2/ros2/releases/download/release-crystal-20190214/ros2-crystal-20190214-windows-release-amd64.zip"))
+    (log4cxx, new Uri("https://github.com/ros2/choco-packages/releases/download/2019-02-15-1/log4cxx.0.10.0.nupkg")),
+    (ssl, new Uri("https://slproweb.com/download/Win64OpenSSL-1_0_2r.exe")),
+    (ros, new Uri("https://github.com/ros2/ros2/releases/download/release-crystal-20190314/ros2-crystal-20190314-windows-release-amd64.zip"))
 };
 
 
@@ -96,7 +98,7 @@ Task("Setup Nuget Libaries")
     .IsDependentOn("Download")
     .Does(() =>
 {
-    var packages = new[]{"asio", "eigen", "tinyxml2", "tinyxml-usestl"};
+    var packages = new[]{"asio", "eigen", "tinyxml2", "tinyxml-usestl", "log4cxx"};
     foreach (var package in packages)
     {
         StartPowershellScript("Install-Package " + package + " -Source " + MakeAbsolute(downloadDir).FullPath + " -Destination " + MakeAbsolute(dependenciesDir));
